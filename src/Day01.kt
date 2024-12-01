@@ -1,21 +1,42 @@
+import kotlin.math.abs
+
 fun main() {
-    fun part1(input: List<String>): Int {
-        return input.size
+    fun part1(leftList: MutableList<Int>, rightList: MutableList<Int>): Int {
+
+        leftList.sort()
+        rightList.sort()
+
+        return leftList.foldIndexed(0) { index, acc, current ->
+            acc + abs((abs(current) - abs(rightList[index])))
+        }
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun part2(leftList: MutableList<Int>, rightList: MutableList<Int>): Int {
+        val rightMap = hashMapOf<Int, Int>()
+
+        rightList.map { element ->
+            if (!rightMap.containsKey(element)) {
+                rightMap[element] = rightList.filter { it == element }.size
+            }
+        }
+
+        return leftList.fold(0) { acc, current ->
+            acc + (current * (rightMap[current] ?: 0))
+        }
     }
 
-    // Test if implementation meets criteria from the description, like:
-    check(part1(listOf("test_input")) == 1)
-
-    // Or read a large test input from the `src/Day01_test.txt` file:
-    val testInput = readInput("Day01_test")
-    check(part1(testInput) == 1)
-
-    // Read the input from the `src/Day01.txt` file.
+    // Read the input from the `src/inputs/Day01.txt` file.
     val input = readInput("Day01")
-    part1(input).println()
-    part2(input).println()
+
+    val leftList = mutableListOf<Int>()
+    val rightList = mutableListOf<Int>()
+
+    input.forEach { pair ->
+        val splitted = pair.split("   ")
+        leftList.add(splitted.first().toInt())
+        rightList.add(splitted.last().toInt())
+    }
+
+    println(part1(leftList, rightList))
+    println(part2(leftList, rightList))
 }
